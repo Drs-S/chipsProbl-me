@@ -1,12 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Paramètres du scénario
+# Paramètres
 list_gout_chips = ["barbecue", "nature", "sel&vinaigre", "paprika", "crème&oignons"]
 nombre_ami = 3
 nb_simulations = 200
 
-# 1. Phase interactive : Collecte des choix réels des utilisateurs
+#Collecte des choix réels des utilisateurs
 print("--- PHASE DE TEST (5 soirées d'évaluation) ---")
 votes_cumules = np.zeros(len(list_gout_chips))
 
@@ -25,7 +25,7 @@ for i, gout in enumerate(list_gout_chips):
                 print("Réponse invalide, tapez 'o' pour oui ou 'n' pour non.")
     votes_cumules[i] = votes_positifs
 
-# Calcul des vraies probabilités basées sur vos votes
+# Calcul des probabilités
 probabilites_reelles = votes_cumules / nombre_ami
 meilleur_gout_idx = np.argmax(probabilites_reelles)
 
@@ -34,7 +34,7 @@ for gout, proba in zip(list_gout_chips, probabilites_reelles):
     print(f"{gout.capitalize()} : {proba*100:.0f}% d'approbation")
 print(f"Le goût favori du groupe est donc : {list_gout_chips[meilleur_gout_idx].upper()}\n")
 
-# 2. Définition des algorithmes
+# on utilise les algos du jupyter
 def argmax_aleatoire(valeurs, generateur):
     est_maximum = valeurs == valeurs.max(axis=1, keepdims=True)
     return np.argmax(est_maximum * generateur.random(valeurs.shape), axis=1)
@@ -94,7 +94,7 @@ def simuler_algo(algo, nom_algo, nb_soirees):
     regret = pas * probabilites_reelles.max() - recompense_cumulee
     return pas, taux_meilleur, recompense_cumulee, regret
 
-# 3. Simulation et Affichage pour 100 et 1000 soirées
+#Simulation pour 100 et 1000 soirées
 horizons = [100, 1000]
 fig, axes = plt.subplots(len(horizons), 3, figsize=(15, 8))
 titres = ["Taux choix du meilleur goût", "Récompense moyenne", "Regret cumulé"]
