@@ -5,17 +5,20 @@ import matplotlib.pyplot as plt
 list_gout_chips = ["barbecue", "nature", "sel&vinaigre", "paprika", "crème&oignons"]
 nombre_ami = 3
 nb_simulations = 200
+nb_soirees_test = 10  # Définissez ici le nombre de soirées pour la phase d'évaluation
 
 # Collecte des choix réels des utilisateurs
-print("--- PHASE DE TEST (5 soirées d'évaluation) ---")
+print(f"--- PHASE DE TEST ({nb_soirees_test} soirées d'évaluation) ---")
 votes_cumules = np.zeros(len(list_gout_chips))
+apparitions_gout = np.zeros(len(list_gout_chips))
 
-# Aléatoire pour la présentation des goûts
-indices_aleatoires = np.random.permutation(len(list_gout_chips))
-
-for numero_soiree, i in enumerate(indices_aleatoires):
+for soiree in range(1, nb_soirees_test + 1):
+    # Tirage purement aléatoire d'un goût pour la soirée
+    i = np.random.randint(len(list_gout_chips))
     gout = list_gout_chips[i]
-    print(f"\nSoirée {numero_soiree+1} - Dégustation des chips : {gout.upper()}")
+    apparitions_gout[i] += 1
+
+    print(f"\nSoirée {soiree} - Dégustation des chips : {gout.upper()}")
     votes_positifs = 0
     for ami in range(1, nombre_ami + 1):
         while True:
@@ -27,18 +30,22 @@ for numero_soiree, i in enumerate(indices_aleatoires):
                 break
             else:
                 print("Réponse invalide, tapez 'o' pour oui ou 'n' pour non.")
-    votes_cumules[i] = votes_positifs
+    votes_cumules[i] += votes_positifs
 
 # Calcul des probabilités
-probabilites_reelles = votes_cumules / nombre_ami
+probabilites_reelles = np.zeros(len(list_gout_chips))
+# Évite la division par zéro si un goût n'a jamais été proposé
+masque = apparitions_gout > 0
+probabilites_reelles[masque] = votes_cumules[masque] / (apparitions_gout[masque] * nombre_ami)
+
 meilleur_gout_idx = np.argmax(probabilites_reelles)
 
 print("\n--- RÉSULTATS DES VOTES ---")
-for gout, proba in zip(list_gout_chips, probabilites_reelles):
-    print(f"{gout.capitalize()} : {proba*100:.0f}% d'approbation")
+for gout, proba, app in zip(list_gout_chips, probabilites_reelles, apparitions_gout):
+    print(f"{gout.capitalize()} : {proba*100:.0f}% d'approbation (testé {int(app)} fois)")
 print(f"Le goût favori du groupe est donc : {list_gout_chips[meilleur_gout_idx].upper()}\n")
 
-# on utilise les algos du jupyter
+# Algorithmes
 def argmax_aleatoire(valeurs, generateur):
     est_maximum = valeurs == valeurs.max(axis=1, keepdims=True)
     return np.argmax(est_maximum * generateur.random(valeurs.shape), axis=1)
@@ -101,7 +108,7 @@ def simuler_algo(algo, nom_algo, nb_soirees):
 # Simulation pour 100 et 1000 soirées
 horizons = [100, 1000]
 fig, axes = plt.subplots(len(horizons), 3, figsize=(15, 8))
-titres = ["Taux choix du meilleur goût", "Récompense moyenne", "Regret"]
+titres = ["Taux choix du meilleur goût", "Récompense moyenne", "Regret cumulé"]
 
 for row, H in enumerate(horizons):
     print(f"Simulation pour {H} soirées en cours...")
