@@ -6,12 +6,16 @@ list_gout_chips = ["barbecue", "nature", "sel&vinaigre", "paprika", "crème&oign
 nombre_ami = 3
 nb_simulations = 200
 
-#Collecte des choix réels des utilisateurs
+# Collecte des choix réels des utilisateurs
 print("--- PHASE DE TEST (5 soirées d'évaluation) ---")
 votes_cumules = np.zeros(len(list_gout_chips))
 
-for i, gout in enumerate(list_gout_chips):
-    print(f"\nSoirée {i+1} - Dégustation des chips : {gout.upper()}")
+# Aléatoire pour la présentation des goûts
+indices_aleatoires = np.random.permutation(len(list_gout_chips))
+
+for numero_soiree, i in enumerate(indices_aleatoires):
+    gout = list_gout_chips[i]
+    print(f"\nSoirée {numero_soiree+1} - Dégustation des chips : {gout.upper()}")
     votes_positifs = 0
     for ami in range(1, nombre_ami + 1):
         while True:
@@ -94,10 +98,10 @@ def simuler_algo(algo, nom_algo, nb_soirees):
     regret = pas * probabilites_reelles.max() - recompense_cumulee
     return pas, taux_meilleur, recompense_cumulee, regret
 
-#Simulation pour 100 et 1000 soirées
+# Simulation pour 100 et 1000 soirées
 horizons = [100, 1000]
 fig, axes = plt.subplots(len(horizons), 3, figsize=(15, 8))
-titres = ["Taux choix du meilleur goût", "Récompense moyenne", "Regret cumulé"]
+titres = ["Taux choix du meilleur goût", "Récompense moyenne", "Regret"]
 
 for row, H in enumerate(horizons):
     print(f"Simulation pour {H} soirées en cours...")
